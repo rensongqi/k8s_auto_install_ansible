@@ -1,0 +1,25 @@
+- name: 1.Copy kubeadm config
+  template: src=kubeadm-config-latest.yaml.j2 dest=/etc/kubernetes/kubeadm-config-latest.yaml
+  when: inventory_hostname == hosts.master[0]
+
+- name: 2.Exec kubeadm init scripts
+  shell: |
+    kubeadm init --config /etc/kubernetes/kubeadm-config-latest.yaml --ignore-preflight-errors=Swap
+  when: inventory_hostname == hosts.master[0]
+  ignore_errors: True
+  register: result
+
+- name: 3.debug
+  debug: var=result.stdout
+
+- name: 4.Copy after_init.sh
+  copy: src=after_init.sh dest=/etc/kubernetes/after_init.sh
+  when: inventory_hostname == hosts.master[0]
+
+- name: 5.Config Master cluster
+  shell: |
+    bash /etc/kubernetes/after_init.sh
+  when: "'master' in group_names"
+
+- name: 6.Enable kubelet
+  service: name=kubelet enabled=yes

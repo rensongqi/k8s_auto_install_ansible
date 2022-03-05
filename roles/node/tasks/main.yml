@@ -1,0 +1,28 @@
+- name: 1.Copy join scripts
+  copy: src=kubeadm_join.sh dest=/etc/kubernetes/
+  when: "'node' in group_names"
+
+- name: 2.Get join TOKEN
+  shell: |
+    kubeadm token create >/dev/null 2>&1
+    kubeadm token list | awk 'END{print $1}'
+  register: TOKEN
+  when: "'master' in group_names"
+
+- name: 3.Get join HASH
+  shell: |
+    openssl x509 -pubkey -in /etc/kubernetes/pki/ca.crt | openssl rsa -pubin -outform der 2>/dev/null | openssl dgst -sha256 -hex | sed 's/^.* //'
+  register: HASH
+  when: "'master' in group_names"
+
+- name: 4.kubeadm join
+  shell: |
+    bash /etc/kubernetes/kubeadm_join.sh {{hostvars[hosts.master[0]].inventory_hostname}} {{hostvars[hosts.master[0]].TOKEN.stdout}} {{hostvars[hosts.master[0]].HASH.stdout}}
+  register: result
+  when: "'node' in group_names"
+
+- name: 5.debugNode
+  debug: var=result.stdout
+
+- name: 6.Enable kubelet service
+  service: name=kubelet enabled=yes

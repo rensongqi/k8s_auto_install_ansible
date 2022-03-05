@@ -1,0 +1,42 @@
+- name: 1.k8s组件安装
+  hosts: 
+    - master
+    - node
+  gather_facts: false
+  roles:
+    - install
+  tags: install
+
+- name: 2.k8s初始化
+  hosts: 
+    - master
+    - node
+  gather_facts: false
+  roles:
+    - initial
+  tags: initial
+
+- name: 3.k8s master init
+  hosts:
+    - master
+    - node
+  gather_facts: false
+  roles:
+    - master
+  tags: master
+
+- name: 4.k8s apply network addons
+  hosts: master
+  gather_facts: false
+  roles:
+    - addons
+  tags: addons
+
+- name: 5.k8s node join
+  hosts: 
+    - master
+    - node
+  gather_facts: false
+  roles:
+    - node
+  tags: node

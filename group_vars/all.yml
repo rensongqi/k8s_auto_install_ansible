@@ -1,0 +1,17 @@
+# k8s version [1.18.3/1.19.4/...]
+# 支持大多数版本
+k8s_version: '1.19.4'
+
+# network plugin [flannel/calico]
+network_plugin: 'flannel'
+
+# 集群网络规划
+service_cidr: '10.96.0.0/12'
+pod_cidr: '10.244.0.0/16'
+
+# 集群IP规划，master暂时只支持一个，node可以有多个
+hosts:
+  master:
+    - '192.168.0.30'
+  node:
+    - '192.168.0.31'

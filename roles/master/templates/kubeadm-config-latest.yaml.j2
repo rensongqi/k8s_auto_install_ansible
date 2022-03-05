@@ -1,0 +1,30 @@
+apiServer:
+  extraArgs:
+    authorization-mode: Node,RBAC
+  timeoutForControlPlane: 4m0s
+apiVersion: kubeadm.k8s.io/v1beta2
+certificatesDir: /etc/kubernetes/pki
+clusterName: kubernetes
+dns:
+  type: CoreDNS
+etcd:
+  local:
+    dataDir: /var/lib/etcd
+imageRepository: registry.aliyuncs.com/google_containers
+kind: ClusterConfiguration
+kubernetesVersion: {{ k8s_version }}
+networking:
+  dnsDomain: cluster.local
+  serviceSubnet: {{ service_cidr }}
+  podSubnet: {{ pod_cidr }}
+---
+apiVersion: kubeproxy.config.k8s.io/v1alpha1
+bootstrapTokens:
+- groups:
+  - system:bootstrappers:kubeadm:default-node-token
+  ttl: 48h0m0s
+  usages:
+  - signing
+  - authentication
+kind: KubeProxyConfiguration
+mode: ipvs

@@ -1,0 +1,21 @@
+- name: 1.Initial config
+  template: src=init.sh.j2 dest=/tmp/init.sh
+
+- name: 2.Copy hosts file
+  template: src=hosts.j2 dest=/etc/hosts
+
+- name: 3.Change time zone
+  copy: src=Shanghai dest=/etc/localtime
+
+- name: 4.Stop firewalld
+  service: name=firewalld state=stopped enabled=no
+
+- name: 5.Start Docker Service
+  service: name=docker state=started enabled=yes daemon_reload=yes
+
+- name: 6.mkdir /etc/kubernetes
+  file: name=/etc/kubernetes state=directory
+
+- name: 7.Exec init scripts
+  shell: |
+    bash /tmp/init.sh

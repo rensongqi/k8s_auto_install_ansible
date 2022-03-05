@@ -1,0 +1,13 @@
+- name: 1.Copy yum repo files
+  copy: src={{ item }} dest=/etc/yum.repos.d/
+  with_fileglob:
+    - "*.repo"
+
+- name: 2.yum install packages
+  yum: name={{ item }} state=latest
+  with_items:
+    - "kubelet-{{ k8s_version }}-0.x86_64"
+    - "kubeadm-{{ k8s_version }}-0.x86_64"
+    - "kubectl-{{ k8s_version }}-0.x86_64"
+    - "docker-ce-cli-19.03.12-3.el7"
+    - "docker-ce-19.03.12-3.el7"

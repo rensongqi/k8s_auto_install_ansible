@@ -1,0 +1,5 @@
+[master]
+192.168.0.30 node_name=master
+
+[node]
+192.168.0.31 node_name=node01

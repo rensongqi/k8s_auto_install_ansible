@@ -1,0 +1,25 @@
+- name: 1.mkdir directory
+  file: name=/etc/kubernetes/addons state=directory
+
+- name: 2.Copy flannel network plugin
+  template: src=kube-flannel.yml.j2 dest=/etc/kubernetes/addons/kube-flannel.yml
+  when: network_plugin == 'flannel'
+
+- name: 3.Copy calico network plugin
+  template: src=custom-resources.yaml.j2 dest=/etc/kubernetes/addons/custom-resources.yaml
+  when: network_plugin == 'calico'
+
+- name: 4.Copy calico network plugin
+  template: src=tigera-operator.yaml.j2 dest=/etc/kubernetes/addons/tigera-operator.yaml
+  when: network_plugin == 'calico'
+
+- name: 5.kubectl apply network addons
+  shell: |
+    kubectl apply -f /etc/kubernetes/addons/tigera-operator.yaml
+    kubectl apply -f /etc/kubernetes/addons/custom-resources.yaml
+  when: network_plugin == 'calico'
+
+- name: 6.kubectl apply network addons
+  shell: |
+    kubectl apply -f /etc/kubernetes/addons/
+  when: network_plugin == 'flannel'
