@@ -8,6 +8,12 @@ sudo sed -i 's/SELINUX=enforcing/SELINUX=disabled/g' /etc/selinux/config
 sudo swapoff -a
 sudo sed -ri 's/.*swap.*/#&/' /etc/fstab
 
+modprobe -- ip_vs
+modprobe -- ip_vs_sh
+modprobe -- ip_vs_rr
+modprobe -- ip_vs_wrr
+modprobe -- nf_conntrack_ipv4
+
 sudo echo 1 > /proc/sys/net/bridge/bridge-nf-call-ip6tables 
 sudo echo 1 > /proc/sys/net/bridge/bridge-nf-call-iptables
 sudo cat >/etc/sysctl.conf<<EOF
